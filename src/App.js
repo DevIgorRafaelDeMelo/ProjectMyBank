@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import BancoDados from "./Constantes";
-import { AiOutlineExport } from "react-icons/ai";
+import {
+  AiOutlineExport,
+  AiOutlineVerticalAlignBottom,
+  AiOutlineVerticalAlignTop,
+} from "react-icons/ai";
 
 const Alert1 = () => {
   return (
@@ -39,14 +43,58 @@ const Alert3 = () => {
   );
 };
 
+const Deposito = () => {
+  return (
+    <>
+      <div className=" w-full fixed hidden" id="alertComponetDeposito">
+        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+          Deposito realizado com sucesso !!!
+        </div>
+      </div>
+    </>
+  );
+};
+
+const Saque = () => {
+  return (
+    <>
+      <div className=" w-full fixed hidden" id="alertComponetSaque">
+        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+          Saque realizado com sucesso !!!
+        </div>
+      </div>
+    </>
+  );
+};
+
+const Invalido = () => {
+  return (
+    <>
+      <div className=" w-full fixed hidden" id="alertComponetInvalid">
+        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+          Operação Invalida !!!
+        </div>
+      </div>
+    </>
+  );
+};
+
 const Login = () => {
+  const [saldo, setSaldo] = useState();
   const [secao, setSecao] = useState(true);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [rname, setRname] = useState("");
   const [rpassword, setRpassword] = useState("");
   const [repeat, setRepeat] = useState("");
-  const [lobby, setLobby] = useState(true);
+  const [lobby, setLobby] = useState(false);
+  const [deposito, setDeposito] = useState("");
+  const [box, setBox] = useState("Seq");
+  const [saque, setSaque] = useState("");
+
+  useEffect(() => {
+    setSaldo(BancoDados.Saldo);
+  }, [setSaldo]);
 
   const toggleLogin2 = () => {
     if (secao) {
@@ -77,9 +125,70 @@ const Login = () => {
         setTimeout(() => {
           alerta.classList.remove("block");
           alerta.className += " hidden";
-        }, 2000);
+        }, 1000);
       }
     }
+  };
+
+  const handleClickButtonDeposito = () => {
+    setBox("Dep");
+  };
+
+  const handleClickDeposito = () => {
+    const alerta = document.getElementById("alertComponetDeposito");
+    const dep = document.getElementById("dep");
+    let soma = saldo + Number(deposito);
+    // eslint-disable-next-line no-lone-blocks
+    {
+      if ((deposito <= 0) | (deposito == String)) {
+        return console.log("Invalido");
+      }
+    }
+    setSaldo(soma);
+    dep.value = 0;
+    setDeposito(0);
+    alerta.classList.remove("hidden");
+    alerta.className += " block";
+    setTimeout(() => {
+      alerta.classList.remove("block");
+      alerta.className += " hidden";
+    }, 1000);
+  };
+
+  const iniciaValor = (saldo) => {
+    return Number(saldo).toFixed(2).replace(".", ",");
+  };
+
+  const handleClickSaque = () => {
+    const alerta = document.getElementById("alertComponetSaque");
+    const dep = document.getElementById("saq");
+    let soma = saldo - Number(saque);
+    // eslint-disable-next-line no-lone-blocks
+    {
+      if ((saque >= saldo) | (saque == String)) {
+        const alerta2 = document.getElementById("alertComponetInvalid");
+        alerta2.classList.remove("hidden");
+        alerta2.className += " block";
+        setTimeout(() => {
+          alerta2.classList.remove("block");
+          alerta2.className += " hidden";
+        }, 1000);
+        return console.log("Invalido");
+      }
+    }
+    setSaldo(soma);
+    dep.value = 0;
+    setDeposito(0);
+    alerta.classList.remove("hidden");
+    alerta.className += " block";
+    setTimeout(() => {
+      alerta.classList.remove("block");
+      alerta.className += " hidden";
+    }, 1000);
+  };
+
+  const handleClickButtonSaque = () => {
+    setBox("Seq");
   };
 
   const handleClickButtonRegister = () => {
@@ -222,13 +331,13 @@ const Login = () => {
           </div>
         </div>
       ) : (
-        <div id="Main" className="py-4 px-4">
-          <div className="bg-sky-600 h-20 rounded-md flex justify-between">
+        <div id="Main" className="py-16 px-20">
+          <div className="bg-sky-400 h-20 rounded-md flex justify-between">
             <div className="text-5xl w-1/4 text-white p-3 font-semibold ">
               MyBank
             </div>
             <div className="text-white text-center w-2/4 mt-9">
-              Seja bem vindo, {BancoDados.Usuario}
+              Olá, {BancoDados.Usuario}
             </div>
             <div className="w-1/4">
               <div className=" ml-80 mt-7">
@@ -236,8 +345,78 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <div className="flex">
-            <div className="w-3/5 bg-sky-400 ">12</div>
+          <div className="flex h-5/6 ">
+            <div className="w-3/5 mt-16 p-20 rounded-md bg-sky-400 ">
+              <div className="text-white text-6xl font-semibold">
+                Saldo disponivel : R$ {iniciaValor(saldo)}
+              </div>
+              <div className="mt-20 bg-slate-200 p-20 h-4/6">
+                {box === "Dep" ? (
+                  <div className="">
+                    <div className="text-xl">Insira o valor para depositar</div>
+                    <input
+                      id="dep"
+                      type="number"
+                      placeholder="0,00"
+                      pattern="[0-9]"
+                      min="0"
+                      step="1"
+                      className="mt-10 h-12 w-80 ps-10 appearance-none"
+                      onChange={(e) => setDeposito(e.target.value)}
+                    />
+                    <button
+                      className="ms-40 bg-sky-600 p-5 rounded-md text-white ps-10 pr-10"
+                      onClick={handleClickDeposito}
+                    >
+                      Depositar
+                    </button>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {box === "Seq" ? (
+                  <div className="">
+                    <div className="text-xl">
+                      Insira o valor que deseja sacar
+                    </div>
+                    <input
+                      id="saq"
+                      type="number"
+                      placeholder="0,00"
+                      pattern="[0-9]"
+                      min="0"
+                      step="1"
+                      className="mt-10 h-12 w-80 ps-10 appearance-none"
+                      onChange={(e) => setSaque(e.target.value)}
+                    />
+                    <button
+                      className="ms-40 bg-sky-600 p-5 rounded-md text-white ps-10 pr-10"
+                      onClick={handleClickSaque}
+                    >
+                      Sacar
+                    </button>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </div>
+            <div className="w-2/5 bg-sky-400 mt-16 p-10 ms-16 rounded-md ">
+              <div
+                className="rounded-md text-2xl bg-white p-10 mb-5 flex justify-between pr-20"
+                onClick={handleClickButtonDeposito}
+              >
+                <div>Depositar</div>
+                <AiOutlineVerticalAlignBottom />
+              </div>
+              <div
+                className="rounded-md text-2xl bg-white p-10 mb-5 flex justify-between pr-20"
+                onClick={handleClickButtonSaque}
+              >
+                <div>Saque</div>
+                <AiOutlineVerticalAlignTop />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -251,6 +430,9 @@ function App() {
       <Alert1 />
       <Alert2 />
       <Alert3 />
+      <Deposito />
+      <Saque />
+      <Invalido />
       <Login />
     </div>
   );
