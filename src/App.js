@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import BancoDados from "./Constantes";
+import json from "./Bd.json";
 import {
   AiOutlineExport,
   AiOutlineVerticalAlignBottom,
   AiOutlineVerticalAlignTop,
+  AiOutlineEyeInvisible,
+  AiOutlineEye,
+  AiOutlineFileText,
 } from "react-icons/ai";
+
+var data = new Date();
 
 const Alert1 = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponet">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className="w-40 fixed right-72 hidden" id="alertComponet">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Cadastro criado com suscesso !
         </div>
       </div>
@@ -22,8 +28,8 @@ const Alert1 = () => {
 const Alert2 = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponet2">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className="w-40 fixed right-72 hidden" id="alertComponet2">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Senha Invalida !
         </div>
       </div>
@@ -34,8 +40,8 @@ const Alert2 = () => {
 const Alert3 = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponet3">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className="w-40 fixed right-72 hidden" id="alertComponet3">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Cadastro não foi encontrado !
         </div>
       </div>
@@ -46,8 +52,8 @@ const Alert3 = () => {
 const Deposito = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponetDeposito">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className="w-40 fixed right-72 hidden" id="alertComponetDeposito">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Deposito realizado com sucesso !!!
         </div>
       </div>
@@ -58,8 +64,8 @@ const Deposito = () => {
 const Saque = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponetSaque">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className="w-40 fixed right-72 hidden" id="alertComponetSaque">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Saque realizado com sucesso !!!
         </div>
       </div>
@@ -70,8 +76,8 @@ const Saque = () => {
 const Invalido = () => {
   return (
     <>
-      <div className=" w-full fixed hidden" id="alertComponetInvalid">
-        <div className="bg-white text-center text-3xl w-96 font-semibold p-16 m-auto mt-40 rounded-3xl text-xl">
+      <div className=" w-40 fixed right-72 hidden" id="alertComponetInvalid">
+        <div className="bg-white text-center  text-3xl w-96 font-semibold p-8 w-100  mt-20  border-b-8 border-green-500 text-xl">
           Operação Invalida !!!
         </div>
       </div>
@@ -89,8 +95,9 @@ const Login = () => {
   const [repeat, setRepeat] = useState("");
   const [lobby, setLobby] = useState(false);
   const [deposito, setDeposito] = useState("");
-  const [box, setBox] = useState("Seq");
+  const [box, setBox] = useState("Est");
   const [saque, setSaque] = useState("");
+  const [togle, setTogle] = useState(true);
 
   useEffect(() => {
     setSaldo(BancoDados.Saldo);
@@ -134,16 +141,29 @@ const Login = () => {
     setBox("Dep");
   };
 
+  const handleClickButtonExtrato = () => {
+    setBox("Est");
+  };
+
+  const handleClickSaldo = () => {
+    setTogle(!togle);
+  };
+
+  const sendBankOperacao = (dep, ver) => {
+    JSON.stringify({ data: "10/09/89", tipo: "Deposito", Valor: dep });
+  };
+
   const handleClickDeposito = () => {
     const alerta = document.getElementById("alertComponetDeposito");
     const dep = document.getElementById("dep");
     let soma = saldo + Number(deposito);
     // eslint-disable-next-line no-lone-blocks
     {
-      if ((deposito <= 0) | (deposito == String)) {
+      if ((deposito <= 0) | (deposito === String)) {
         return console.log("Invalido");
       }
     }
+    sendBankOperacao(deposito, true);
     setSaldo(soma);
     dep.value = 0;
     setDeposito(0);
@@ -165,7 +185,7 @@ const Login = () => {
     let soma = saldo - Number(saque);
     // eslint-disable-next-line no-lone-blocks
     {
-      if ((saque >= saldo) | (saque == String)) {
+      if ((saque >= saldo) | (saque === String) | (saque <= 0)) {
         const alerta2 = document.getElementById("alertComponetInvalid");
         alerta2.classList.remove("hidden");
         alerta2.className += " block";
@@ -340,17 +360,30 @@ const Login = () => {
               Olá, {BancoDados.Usuario}
             </div>
             <div className="w-1/4">
-              <div className=" ml-80 mt-7">
-                <AiOutlineExport color="white" height="3em" width="3em" />
+              <div className=" ml-80 mt-6 text-white text-4xl ">
+                <AiOutlineExport />
               </div>
             </div>
           </div>
           <div className="flex h-5/6 ">
             <div className="w-3/5 mt-16 p-20 rounded-md bg-sky-400 ">
-              <div className="text-white text-6xl font-semibold">
-                Saldo disponivel : R$ {iniciaValor(saldo)}
+              <div className="text-white text-5xl font-semibold flex justify-between">
+                Seu saldo: R$
+                {togle ? (
+                  <div id="saldo">{iniciaValor(saldo)}</div>
+                ) : (
+                  <div id="saldo">00,00</div>
+                )}
+                {togle ? (
+                  <AiOutlineEyeInvisible
+                    className="mr-4"
+                    onClick={handleClickSaldo}
+                  />
+                ) : (
+                  <AiOutlineEye className="mr-4" onClick={handleClickSaldo} />
+                )}
               </div>
-              <div className="mt-20 bg-slate-200 p-20 h-4/6">
+              <div className="mt-20 bg-slate-200 p-20 h-5/6 ">
                 {box === "Dep" ? (
                   <div className="">
                     <div className="text-xl">Insira o valor para depositar</div>
@@ -399,6 +432,28 @@ const Login = () => {
                 ) : (
                   <></>
                 )}
+                {box === "Est" ? (
+                  <div className="">
+                    <div className="text-2xl mb-2">Extrato:</div>
+                    <div className="overflow-auto h-60 ">
+                      {json.map((val) => {
+                        return (
+                          <div className="bg-blue-200 mb-5 p-4">
+                            <div key={val.data}>
+                              Data da transalação: {val.data}
+                            </div>
+                            <div>Tipo da translação: {val.tipo}</div>
+                            <div className="text-2xl">
+                              Valor R$ : {val.Valor}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
             <div className="w-2/5 bg-sky-400 mt-16 p-10 ms-16 rounded-md ">
@@ -415,6 +470,13 @@ const Login = () => {
               >
                 <div>Saque</div>
                 <AiOutlineVerticalAlignTop />
+              </div>
+              <div
+                className="rounded-md text-2xl bg-white p-10 mb-5 flex justify-between pr-20"
+                onClick={handleClickButtonExtrato}
+              >
+                <div>Extrato</div>
+                <AiOutlineFileText />
               </div>
             </div>
           </div>

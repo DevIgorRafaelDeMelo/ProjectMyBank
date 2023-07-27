@@ -1,0 +1,19 @@
+[
+    {
+        "data": "12/01/2023",
+        "tipo": "Deposito",
+        "Valor": 875.66
+    },{
+        "data": "14/04/2023",
+        "tipo": "Saque",
+        "Valor": 100.66
+    },{
+        "data": "15/04/2023",
+        "tipo": "Deposito",
+        "Valor": 18.66
+    },{
+        "data": "16/02/2023",
+        "tipo": "Deposito",
+        "Valor": 90.66
+    }
+]

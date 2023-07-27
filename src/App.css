@@ -1,16 +1,16 @@
-.App{
+.App {
   margin: 0%;
   padding: 0%;
   height: 100vh;
 }
 
-#Login{
+#Login {
   background-image: url("./Img/pexels-photo-281260.webp");
   background-repeat: no-repeat;
-  background-size: cover
+  background-size: cover;
 }
 
-#Main{
+#Main {
   background-image: url("./Img/pexels-photo-281260.webp");
   background-repeat: no-repeat;
   background-size: cover;
