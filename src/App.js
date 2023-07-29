@@ -233,7 +233,7 @@ const Login = () => {
   const [rname, setRname] = useState("");
   const [rpassword, setRpassword] = useState("");
   const [repeat, setRepeat] = useState("");
-  const [lobby, setLobby] = useState(false);
+  const [lobby, setLobby] = useState(true);
   const [deposito, setDeposito] = useState("");
   const [box, setBox] = useState("Est");
   const [saque, setSaque] = useState("");
@@ -449,6 +449,15 @@ const Login = () => {
     }
   };
 
+  const calculaSaldoNegativo = () => {
+    var Total = 0;
+    // eslint-disable-next-line array-callback-return
+    list.map((val) => {
+      Total = Total + val.vs;
+    });
+    return Total;
+  };
+
   return (
     <>
       {lobby ? (
@@ -583,7 +592,7 @@ const Login = () => {
                   <AiOutlineEye className="mr-4" onClick={handleClickSaldo} />
                 )}
               </div>
-              <div className="mt-20 bg-slate-200 p-20 h-5/6 ">
+              <div className="mt-20 bg-slate-200 p-20 h-auto ">
                 {box === "Dep" ? (
                   <div className="">
                     <div className="text-xl">Insira o valor para depositar</div>
@@ -634,8 +643,8 @@ const Login = () => {
                 )}
                 {box === "Est" ? (
                   <div className="">
-                    <div className="text-2xl mb-2">Extrato:</div>
-                    <div className="overflow-auto h-60 ">
+                    <div className="text-2xl mb-2 ">Extrato:</div>
+                    <div className="overflow-auto  max-h-80 ">
                       {itens.map((val) => (
                         <>
                           {val.tipo ? (
@@ -644,7 +653,7 @@ const Login = () => {
                                 Data de translaçao: {val.nome}
                               </div>
                               <div className="text-red-800 text-xl font-semibold0">
-                                {val.tipo ? <>Deposito</> : <>Retirada</>}
+                                {val.tipo ? <>Depósito</> : <>Retirada</>}
                               </div>
                               <div className="text-xl font-semibold text-white">
                                 R$: {iniciaValor(val.Valor)}
@@ -656,7 +665,7 @@ const Login = () => {
                                 Data de translaçao: {val.nome}
                               </div>
                               <div className="text-red-800 text-xl font-semibold">
-                                {val.tipo ? <>Deposito</> : <>Retirada</>}
+                                {val.tipo ? <>Depósito</> : <>Retirada</>}
                               </div>
                               <div className="text-xl font-semibold text-white">
                                 R$: {iniciaValor(val.Valor)}
@@ -674,6 +683,7 @@ const Login = () => {
                   <>
                     <div className="text-2xl flex justify-between">
                       <div>Contas mensais</div>
+
                       <div className="flex">
                         <div
                           className="text-3xl bg-sky-300 p-3 mr-5 rounded-md text-white"
@@ -688,6 +698,9 @@ const Login = () => {
                           <AiOutlinePlusSquare />
                         </div>
                       </div>
+                    </div>
+                    <div className="">
+                      Seu gastos a.m R$ - {iniciaValor(calculaSaldoNegativo())}
                     </div>
                     <div className="overflow-auto mt-3 h-60">
                       {list.map((Val) => (
@@ -705,11 +718,10 @@ const Login = () => {
                             </div>
                           </div>
                           <div
-                            className="w-1/12 bg-red-500 w-full p-2 text-white mb-3 text-3xl pt-14 text-center "
+                            className=" bg-red-500 w-1/12  p-2 text-white mb-3 text-3xl pt-14 text-center "
                             onClick={() => {
                               const item = document.getElementById(Val.nome);
-                              console.log(list);
-                              console.log(item);
+                              // eslint-disable-next-line array-callback-return
                               list.map((nu) => {
                                 if (nu.nome === item.id) {
                                   list.splice(list.indexOf(item.id), 1);
