@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import BancoDados from "./Constantes";
-import json from "./Bd.json";
 import {
   AiOutlineExport,
   AiOutlineVerticalAlignBottom,
@@ -9,9 +8,14 @@ import {
   AiOutlineEyeInvisible,
   AiOutlineEye,
   AiOutlineFileText,
+  AiOutlineReconciliation,
+  AiOutlinePlusSquare,
+  AiOutlineSync,
+  AiOutlineDelete,
 } from "react-icons/ai";
 
-var data = new Date();
+const itens = JSON.parse(localStorage.getItem("itens")) || [];
+var list = JSON.parse(localStorage.getItem("list")) || [];
 
 const Alert1 = () => {
   return (
@@ -85,6 +89,142 @@ const Invalido = () => {
   );
 };
 
+const handleClickClose = () => {
+  const list = document.getElementById("AddList");
+  list.classList.remove("block");
+  list.className += " hidden";
+};
+
+const AdcLista = () => {
+  const handleClickANewItem = () => {
+    const Vum = document.getElementById("valorName");
+    const Vdois = document.getElementById("valorDescricao");
+    const Vtreis = document.getElementById("valorPrestacoes");
+    const Vquatro = document.getElementById("valorTotal");
+    const Vcinco = document.getElementById("ValorSelect");
+
+    if (
+      Vum.value === "" ||
+      Vdois.value === "" ||
+      Vtreis.value === "" ||
+      Vquatro.value === "" ||
+      Vcinco.value === ""
+    ) {
+      return;
+    }
+
+    var val = Vquatro.value / Vtreis.value;
+
+    const itemAtualNew = {
+      nome: Vum.value,
+      descricao: Vdois.value,
+      vs: val,
+      parcela: Vtreis.value,
+      tipo: Vcinco.value,
+    };
+
+    list.push(itemAtualNew);
+
+    localStorage.setItem("list", JSON.stringify(list));
+
+    Vum.value = "";
+    Vdois.value = "";
+    Vtreis.value = "";
+    Vquatro.value = "";
+    Vcinco.value = "";
+
+    handleClickClose();
+  };
+  return (
+    <>
+      <div
+        className="fixed top-0 hidden h-full bg-gradient-to-r from-blue-500 w-full"
+        id="AddList"
+      >
+        <div className="bg-sky-400 w-2/6 m-auto mt-10 rounded-lg h-5/6">
+          <div className="text-center text-3xl p-10 text-white">
+            Adicionar conta
+          </div>
+          <div className="m-10 bg-white px-10 py-12 rounded-lg text-2xl">
+            <div className=" flex justify-between mb-3">
+              <label for="valorName" className="w-2/12 ">
+                Nome:
+              </label>
+              <input
+                type="text"
+                id="valorName"
+                className="ms-5 w-9/12 bg-slate-200 rounded-lg p-2 focus:outline-none"
+              />
+            </div>
+            <div className=" flex justify-between mb-3">
+              <label for="valorDescricao" className="w-2/12 ">
+                Descrição:
+              </label>
+              <input
+                type="text"
+                id="valorDescricao"
+                className="ms-5 w-9/12 bg-slate-200 rounded-lg p-2 focus:outline-none"
+              />
+            </div>
+            <div className=" flex justify-between mb-3">
+              <label for="valorPrestacoes" className="w-2/12 ">
+                Prestações:
+              </label>
+              <input
+                type="number"
+                id="valorPrestacoes"
+                className="ms-5 w-2/12 bg-slate-200 rounded-lg p-2 focus:outline-none"
+              />
+            </div>
+            <div className=" flex justify-between mb-3">
+              <div>Tipo</div>
+              <select
+                class=" w-6/12 bg-slate-200 rounded-lg p-2 focus:outline-none"
+                id="ValorSelect"
+              >
+                <option>Moradia</option>
+                <option>Transporte</option>
+                <option>Alimentação</option>
+                <option>Roupas</option>
+                <option>Cartão</option>
+                <option>Bem estar</option>
+                <option>Investimento</option>
+                <option>Educação</option>
+                <option>Alimentação</option>
+                <option>Imp IPVA/IPTU</option>
+                <option>Lazer</option>
+                <option>Outros</option>
+              </select>
+            </div>
+            <div className=" flex justify-between mb-3">
+              <label for="valorTotal" className="w-2/12 ">
+                Valor Total
+              </label>
+              <input
+                type="number"
+                id="valorTotal"
+                className="ms-5 w-6/12 bg-slate-200 rounded-lg p-2 focus:outline-none"
+              />
+            </div>
+          </div>
+          <div
+            className="w-60 bg-green-500 m-auto text-center text-white text-2xl p-4 rounded-lg mb-3"
+            onClick={handleClickANewItem}
+          >
+            Confirme
+          </div>
+          <div
+            className="w-40 bg-red-600 m-auto text-center text-white text-2xl p-4 rounded-lg "
+            onClick={handleClickClose}
+          >
+            Cancel
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
 const Login = () => {
   const [saldo, setSaldo] = useState();
   const [secao, setSecao] = useState(true);
@@ -102,6 +242,10 @@ const Login = () => {
   useEffect(() => {
     setSaldo(BancoDados.Saldo);
   }, [setSaldo]);
+
+  const arredondar = (n) => {
+    return (Math.round(n * 100) / 100).toFixed(2);
+  };
 
   const toggleLogin2 = () => {
     if (secao) {
@@ -150,7 +294,48 @@ const Login = () => {
   };
 
   const sendBankOperacao = (dep, ver) => {
-    JSON.stringify({ data: "10/09/89", tipo: "Deposito", Valor: dep });
+    var today = new Date();
+    var day = today.getDate() + "";
+    var month = today.getMonth() + 1 + "";
+    var year = today.getFullYear() + "";
+    var hour = today.getHours() + "";
+    var minutes = today.getMinutes() + "";
+    var seconds = today.getSeconds() + "";
+
+    day = checkZero(day);
+    month = checkZero(month);
+    year = checkZero(year);
+    hour = checkZero(hour);
+    minutes = checkZero(minutes);
+    seconds = checkZero(seconds);
+
+    function checkZero(data) {
+      if (data.length === 1) {
+        data = "0" + data;
+      }
+      return data;
+    }
+    var dat =
+      day +
+      "/" +
+      month +
+      "/" +
+      year +
+      " " +
+      hour +
+      ":" +
+      minutes +
+      ":" +
+      seconds;
+    const itemAtual = {
+      nome: dat,
+      tipo: ver,
+      Valor: arredondar(dep),
+    };
+
+    itens.push(itemAtual);
+
+    localStorage.setItem("item", JSON.stringify(itens));
   };
 
   const handleClickDeposito = () => {
@@ -165,7 +350,7 @@ const Login = () => {
     }
     sendBankOperacao(deposito, true);
     setSaldo(soma);
-    dep.value = 0;
+    dep.value = "";
     setDeposito(0);
     alerta.classList.remove("hidden");
     alerta.className += " block";
@@ -187,6 +372,7 @@ const Login = () => {
     {
       if ((saque >= saldo) | (saque === String) | (saque <= 0)) {
         const alerta2 = document.getElementById("alertComponetInvalid");
+        dep.value = "";
         alerta2.classList.remove("hidden");
         alerta2.className += " block";
         setTimeout(() => {
@@ -196,8 +382,9 @@ const Login = () => {
         return console.log("Invalido");
       }
     }
+    sendBankOperacao(Number(saque), false);
     setSaldo(soma);
-    dep.value = 0;
+    dep.value = "";
     setDeposito(0);
     alerta.classList.remove("hidden");
     alerta.className += " block";
@@ -209,6 +396,19 @@ const Login = () => {
 
   const handleClickButtonSaque = () => {
     setBox("Seq");
+  };
+
+  const handleClickButtonContas = () => {
+    setBox("");
+    setTimeout(() => {
+      setBox("Cnt");
+    }, 1);
+  };
+
+  const handleClickAdcList = () => {
+    const list = document.getElementById("AddList");
+    list.classList.remove("hidden");
+    list.className += " block";
   };
 
   const handleClickButtonRegister = () => {
@@ -365,14 +565,14 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <div className="flex h-5/6 ">
-            <div className="w-3/5 mt-16 p-20 rounded-md bg-sky-400 ">
+          <div className="flex h-auto  ">
+            <div className="w-3/5 mt-16 p-10 rounded-md bg-sky-400 ">
               <div className="text-white text-5xl font-semibold flex justify-between">
                 Seu saldo: R$
                 {togle ? (
                   <div id="saldo">{iniciaValor(saldo)}</div>
                 ) : (
-                  <div id="saldo">00,00</div>
+                  <div id="saldo">000,00</div>
                 )}
                 {togle ? (
                   <AiOutlineEyeInvisible
@@ -436,21 +636,94 @@ const Login = () => {
                   <div className="">
                     <div className="text-2xl mb-2">Extrato:</div>
                     <div className="overflow-auto h-60 ">
-                      {json.map((val) => {
-                        return (
-                          <div className="bg-blue-200 mb-5 p-4">
-                            <div key={val.data}>
-                              Data da transalação: {val.data}
+                      {itens.map((val) => (
+                        <>
+                          {val.tipo ? (
+                            <div className="bg-white-200 bg-sky-400 mb-4 p-4 rounded-md">
+                              <div className="text-lx1 text-white">
+                                Data de translaçao: {val.nome}
+                              </div>
+                              <div className="text-red-800 text-xl font-semibold0">
+                                {val.tipo ? <>Deposito</> : <>Retirada</>}
+                              </div>
+                              <div className="text-xl font-semibold text-white">
+                                R$: {iniciaValor(val.Valor)}
+                              </div>
                             </div>
-                            <div>Tipo da translação: {val.tipo}</div>
-                            <div className="text-2xl">
-                              Valor R$ : {val.Valor}
+                          ) : (
+                            <div className="bg-white-200 bg-sky-600 mb-4 p-4 rounded-md">
+                              <div className="text-lx1 text-white">
+                                Data de translaçao: {val.nome}
+                              </div>
+                              <div className="text-red-800 text-xl font-semibold">
+                                {val.tipo ? <>Deposito</> : <>Retirada</>}
+                              </div>
+                              <div className="text-xl font-semibold text-white">
+                                R$: {iniciaValor(val.Valor)}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          )}
+                        </>
+                      ))}
                     </div>
                   </div>
+                ) : (
+                  <></>
+                )}
+                {box === "Cnt" ? (
+                  <>
+                    <div className="text-2xl flex justify-between">
+                      <div>Contas mensais</div>
+                      <div className="flex">
+                        <div
+                          className="text-3xl bg-sky-300 p-3 mr-5 rounded-md text-white"
+                          onClick={handleClickButtonContas}
+                        >
+                          <AiOutlineSync />
+                        </div>
+                        <div
+                          className="text-3xl bg-sky-300 p-3  rounded-md text-white"
+                          onClick={handleClickAdcList}
+                        >
+                          <AiOutlinePlusSquare />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="overflow-auto mt-3 h-60">
+                      {list.map((Val) => (
+                        <div className="flex justify-between" id={Val.nome}>
+                          <div className="bg-sky-400 mb-3 p-5 px-20 text-white w-11/12">
+                            <div className="">
+                              <div className="">{Val.nome}</div>
+                              <div className="text-end ">{Val.tipo}</div>
+                              <div className="text-2xl ">
+                                Valor R$: {iniciaValor(Val.vs)}
+                              </div>
+                              <div className="text-end">
+                                Parcelas: {Val.parcela}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className="w-1/12 bg-red-500 w-full p-2 text-white mb-3 text-3xl pt-14 text-center "
+                            onClick={() => {
+                              const item = document.getElementById(Val.nome);
+                              console.log(list);
+                              console.log(item);
+                              list.map((nu) => {
+                                if (nu.nome === item.id) {
+                                  list.splice(list.indexOf(item.id), 1);
+                                  handleClickButtonContas();
+                                }
+                              });
+                            }}
+                          >
+                            <AiOutlineDelete />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 ) : (
                   <></>
                 )}
@@ -478,6 +751,13 @@ const Login = () => {
                 <div>Extrato</div>
                 <AiOutlineFileText />
               </div>
+              <div
+                className="rounded-md text-2xl bg-white p-10 mb-5 flex justify-between pr-20"
+                onClick={handleClickButtonContas}
+              >
+                <div>Contas a pagar</div>
+                <AiOutlineReconciliation />
+              </div>
             </div>
           </div>
         </div>
@@ -495,6 +775,7 @@ function App() {
       <Deposito />
       <Saque />
       <Invalido />
+      <AdcLista />
       <Login />
     </div>
   );

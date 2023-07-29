@@ -1,5 +1,5 @@
 export default class BancoDados {
-  static Usuario = "000";
-  static Password = "000";
+  static Usuario = "Usuario";
+  static Password = "Admim";
   static Saldo = 875.986;
 }
